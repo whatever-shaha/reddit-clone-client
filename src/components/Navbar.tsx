@@ -3,13 +3,17 @@ import { Box, Flex } from '@chakra-ui/layout'
 import Link from 'next/link'
 import React from 'react'
 import { useLogoutMutation, useMeQuery } from '../generated/graphql'
+import { isOnServer } from '../utils/isOnServer'
 
 interface NavbarProps {}
 
 const Navbar: React.FC<NavbarProps> = ({}) => {
-  const [{ data }] = useMeQuery()
   const [{ fetching }, logoutMutation] = useLogoutMutation()
+  const [{ data }] = useMeQuery({
+    pause: isOnServer(),
+  })
   let body
+  console.log(data?.me)
   if (!data?.me) {
     body = (
       <Flex justifyContent="space-between">
