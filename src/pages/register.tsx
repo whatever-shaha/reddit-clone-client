@@ -5,25 +5,25 @@ import { Field, Form, Formik, FormikHelpers } from 'formik'
 import { withUrqlClient } from 'next-urql'
 import { useRouter } from 'next/dist/client/router'
 import React from 'react'
-import { useRegisterMutation } from '../generated/graphql'
+import { useRegisterMutation, WithEmailInput } from '../generated/graphql'
 import { createUrqlClient } from '../utils/createUrqlClient'
 import { toErrorMap } from '../utils/toErrorMap'
 
 interface registerProps {}
-type userInput = {
-  username: string
-  password: string
-}
+// type userInput = {
+//   username: string
+//   password: string
+// }
 const Register: React.FC<registerProps> = ({}) => {
   const [_, registerMutation] = useRegisterMutation()
   const router = useRouter()
 
   const handleSubmit = async (
-    values: userInput,
-    { setErrors }: FormikHelpers<userInput>
+    values: WithEmailInput,
+    { setErrors }: FormikHelpers<WithEmailInput>
   ) => {
     try {
-      const { data } = await registerMutation(values)
+      const { data } = await registerMutation({ options: values })
       const fetchedErrors = data?.register.errors
       const fetchedUser = data?.register.user
       if (fetchedErrors) {
@@ -50,7 +50,7 @@ const Register: React.FC<registerProps> = ({}) => {
         </Text>
         <Box>
           <Formik
-            initialValues={{ username: '', password: '' }}
+            initialValues={{ username: '', email: '', password: '' }}
             onSubmit={handleSubmit}
           >
             {({ isSubmitting, errors }) => (
@@ -61,7 +61,7 @@ const Register: React.FC<registerProps> = ({}) => {
                     return (
                       <FormControl mb="4" isInvalid={!!errors.username}>
                         <Input
-                          id="username"
+                          // id="username"
                           {...field}
                           colorScheme="twitter"
                           variant="flushed"
@@ -72,11 +72,28 @@ const Register: React.FC<registerProps> = ({}) => {
                     )
                   }}
                 </Field>
-                <Field name="password">
+                <Field name="email" id="email">
+                  {({ field }: { field: string }) => {
+                    // console.log(errors)
+                    return (
+                      <FormControl mb="4" isInvalid={!!errors.email}>
+                        <Input
+                          // id="email"
+                          {...field}
+                          colorScheme="twitter"
+                          variant="flushed"
+                          placeholder="Enter your e-mail"
+                        />
+                        <FormErrorMessage>{errors.email}</FormErrorMessage>
+                      </FormControl>
+                    )
+                  }}
+                </Field>
+                <Field name="password" id="password">
                   {({ field }: { field: string }) => (
                     <FormControl mb="4" isInvalid={!!errors.password}>
                       <Input
-                        id="password"
+                        // id="password"
                         {...field}
                         colorScheme="twitter"
                         type="password"
@@ -102,7 +119,7 @@ const Register: React.FC<registerProps> = ({}) => {
                     colorScheme="cyan"
                     variant="outline"
                   >
-                    Sign in
+                    Log in
                   </Button>
                 </Flex>
               </Form>

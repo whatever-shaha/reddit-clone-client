@@ -23,7 +23,7 @@ import { createUrqlClient } from '../utils/createUrqlClient'
 interface loginProps {}
 
 type userInput = {
-  username: string
+  usernameOrEmail: string
   password: string
 }
 
@@ -58,28 +58,28 @@ const Login: React.FC<loginProps> = ({}) => {
         p="4"
       >
         <Text fontSize="xl" mb="4">
-          Login
+          Log in
         </Text>
         <Box>
           <Formik
-            initialValues={{ username: '', password: '' }}
+            initialValues={{ usernameOrEmail: '', password: '' }}
             onSubmit={handleSubmit}
           >
             {({ isSubmitting, errors }) => (
               <Form>
-                <Field name="username" id="username">
+                <Field name="usernameOrEmail" id="usernameOrEmail">
                   {({ field }: { field: string }) => {
                     // console.log(errors)
                     return (
-                      <FormControl mb="4" isInvalid={!!errors.username}>
+                      <FormControl mb="4" isInvalid={!!errors.usernameOrEmail}>
                         <Input
-                          id="username"
+                          id="usernameOrEmail"
                           {...field}
                           colorScheme="twitter"
                           variant="flushed"
-                          placeholder="Enter your username"
+                          placeholder="Enter your username or e-mail"
                         />
-                        <FormErrorMessage>{errors.username}</FormErrorMessage>
+                        <FormErrorMessage>{errors.usernameOrEmail}</FormErrorMessage>
                       </FormControl>
                     )
                   }}
@@ -101,7 +101,7 @@ const Login: React.FC<loginProps> = ({}) => {
                 </Field>
                 <Flex>
                   <Button isLoading={isSubmitting} type="submit" colorScheme="cyan">
-                    Sign in
+                    Log in
                   </Button>
                   <Spacer />
                   <Text color="#999" fontSize=".75rem" mt="auto" mr="4">
