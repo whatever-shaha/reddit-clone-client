@@ -14,6 +14,13 @@ export type Scalars = {
   Float: number;
 };
 
+export type ChangePasswordInput = {
+  newPassword: Scalars['String'];
+  repeatNewPassword: Scalars['String'];
+  token?: Maybe<Scalars['String']>;
+  currentPassword?: Maybe<Scalars['String']>;
+};
+
 export type FieldError = {
   __typename?: 'FieldError';
   field: Scalars['String'];
@@ -28,6 +35,8 @@ export type Mutation = {
   clearPosts: Scalars['Boolean'];
   register: UserResponse;
   login: UserResponse;
+  passwordRecovery: Scalars['Boolean'];
+  passwordChange: UserResponse;
   logout: Scalars['Boolean'];
   clearUsers: Scalars['Boolean'];
 };
@@ -61,6 +70,16 @@ export type MutationLoginArgs = {
   usernameOrEmail: Scalars['String'];
 };
 
+
+export type MutationPasswordRecoveryArgs = {
+  usernameOrEmail: Scalars['String'];
+};
+
+
+export type MutationPasswordChangeArgs = {
+  options: ChangePasswordInput;
+};
+
 export type Post = {
   __typename?: 'Post';
   id: Scalars['Float'];
@@ -75,12 +94,18 @@ export type Query = {
   posts: Array<Post>;
   post: Post;
   me?: Maybe<User>;
+  isTokenValid: Scalars['Boolean'];
   users: Array<User>;
 };
 
 
 export type QueryPostArgs = {
   id: Scalars['Float'];
+};
+
+
+export type QueryIsTokenValidArgs = {
+  token: Scalars['String'];
 };
 
 export type User = {
@@ -95,6 +120,7 @@ export type User = {
 export type UserResponse = {
   __typename?: 'UserResponse';
   errors?: Maybe<Array<FieldError>>;
+  error?: Maybe<FieldError>;
   user?: Maybe<User>;
 };
 
@@ -137,6 +163,38 @@ export type LogoutMutation = (
   & Pick<Mutation, 'logout'>
 );
 
+export type PasswordChangeMutationVariables = Exact<{
+  options: ChangePasswordInput;
+}>;
+
+
+export type PasswordChangeMutation = (
+  { __typename?: 'Mutation' }
+  & { passwordChange: (
+    { __typename?: 'UserResponse' }
+    & { user?: Maybe<(
+      { __typename?: 'User' }
+      & UserFieldsFragment
+    )>, error?: Maybe<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>> }
+  ) }
+);
+
+export type PasswordRecoveryMutationVariables = Exact<{
+  usernameOrEmail: Scalars['String'];
+}>;
+
+
+export type PasswordRecoveryMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'passwordRecovery'>
+);
+
 export type RegisterMutationVariables = Exact<{
   options: WithEmailInput;
 }>;
@@ -154,6 +212,16 @@ export type RegisterMutation = (
       & UserFieldsFragment
     )> }
   ) }
+);
+
+export type IsTokenValidQueryVariables = Exact<{
+  token: Scalars['String'];
+}>;
+
+
+export type IsTokenValidQuery = (
+  { __typename?: 'Query' }
+  & Pick<Query, 'isTokenValid'>
 );
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
@@ -210,6 +278,36 @@ export const LogoutDocument = gql`
 export function useLogoutMutation() {
   return Urql.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument);
 };
+export const PasswordChangeDocument = gql`
+    mutation PasswordChange($options: ChangePasswordInput!) {
+  passwordChange(options: $options) {
+    user {
+      ...userFields
+    }
+    error {
+      field
+      message
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+    ${UserFieldsFragmentDoc}`;
+
+export function usePasswordChangeMutation() {
+  return Urql.useMutation<PasswordChangeMutation, PasswordChangeMutationVariables>(PasswordChangeDocument);
+};
+export const PasswordRecoveryDocument = gql`
+    mutation PasswordRecovery($usernameOrEmail: String!) {
+  passwordRecovery(usernameOrEmail: $usernameOrEmail)
+}
+    `;
+
+export function usePasswordRecoveryMutation() {
+  return Urql.useMutation<PasswordRecoveryMutation, PasswordRecoveryMutationVariables>(PasswordRecoveryDocument);
+};
 export const RegisterDocument = gql`
     mutation Register($options: withEmailInput!) {
   register(options: $options) {
@@ -226,6 +324,15 @@ export const RegisterDocument = gql`
 
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
+};
+export const IsTokenValidDocument = gql`
+    query IsTokenValid($token: String!) {
+  isTokenValid(token: $token)
+}
+    `;
+
+export function useIsTokenValidQuery(options: Omit<Urql.UseQueryArgs<IsTokenValidQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<IsTokenValidQuery>({ query: IsTokenValidDocument, ...options });
 };
 export const MeDocument = gql`
     query Me {

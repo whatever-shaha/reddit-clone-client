@@ -5,7 +5,7 @@ export const toErrorMap = (errors: FieldError[]): Record<string, string> => {
   errors.forEach(({ field, message }) => {
     if (field === 'any') {
       errorMap.password = message
-      errorMap.username = message
+      errorMap.usernameOrEmail = message
       return
     }
     errorMap[field] = message

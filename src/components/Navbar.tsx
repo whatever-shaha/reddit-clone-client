@@ -13,7 +13,6 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
     pause: isOnServer(),
   })
   let body
-  console.log(data?.me)
   if (!data?.me) {
     body = (
       <Flex justifyContent="space-between">

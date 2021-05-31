@@ -1,0 +1,3 @@
+query IsTokenValid($token: String!) {
+  isTokenValid(token: $token)
+}
